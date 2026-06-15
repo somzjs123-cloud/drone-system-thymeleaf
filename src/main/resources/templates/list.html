@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>无人机列表 - 无人机信息管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="navbar app-header">
+            <span class="navbar-brand text-white">无人机信息管理系统</span>
+            <a href="/api/auth/logout" class="btn btn-outline-light btn-sm"
+               onclick="event.preventDefault();fetch('/api/auth/logout',{method:'POST',credentials:'include'}).then(function(){location.href='/login'})">退出</a>
+        </nav>
+
+        <main class="page-main">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form class="form-row align-items-end mb-3" method="get" action="/uav/list">
+                        <div class="form-group col-md-3 col-lg-2">
+                            <label>型号</label>
+                            <input type="text" name="model" class="form-control" placeholder="型号"
+                                   th:value="${query.model}">
+                        </div>
+                        <div class="form-group col-md-3 col-lg-2">
+                            <label>注册编号</label>
+                            <input type="text" name="uavCode" class="form-control" placeholder="注册编号"
+                                   th:value="${query.uavCode}">
+                        </div>
+                        <div class="form-group col-md-3 col-lg-2">
+                            <label>状态</label>
+                            <select name="status" class="form-control">
+                                <option value="">全部状态</option>
+                                <option value="1" th:selected="${query.status != null && query.status == 1}">正常</option>
+                                <option value="0" th:selected="${query.status != null && query.status == 0}">停用</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3 col-lg-3">
+                            <button class="btn btn-primary mr-2" type="submit">搜索</button>
+                            <a href="/uav/add" class="btn btn-success">新增</a>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped mb-0">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>注册编号</th>
+                                    <th>型号</th>
+                                    <th>制造商</th>
+                                    <th class="text-center">最大载重(kg)</th>
+                                    <th class="text-center">最大高度(m)</th>
+                                    <th class="text-center">续航(min)</th>
+                                    <th class="text-center">状态</th>
+                                    <th>创建时间</th>
+                                    <th class="text-center">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${pageData.rows.empty}">
+                                    <td colspan="9" class="text-center text-muted py-5">暂无数据</td>
+                                </tr>
+                                <tr th:each="row : ${pageData.rows}">
+                                    <td>
+                                        <span th:text="${row.uavCode}"></span>
+                                        <span th:if="${row.aiGenerated == 1}" class="badge badge-warning ml-1">AI</span>
+                                    </td>
+                                    <td th:text="${row.model}"></td>
+                                    <td th:text="${row.manufacturer != null ? row.manufacturer : '-'}"></td>
+                                    <td class="text-center" th:text="${row.maxPayload != null ? row.maxPayload : '-'}"></td>
+                                    <td class="text-center" th:text="${row.maxAltitude != null ? row.maxAltitude : '-'}"></td>
+                                    <td class="text-center" th:text="${row.maxFlightTime != null ? row.maxFlightTime : '-'}"></td>
+                                    <td class="text-center">
+                                        <span class="badge" th:classappend="${row.status == 1} ? 'badge-success' : 'badge-danger'"
+                                              th:text="${row.status == 1} ? '正常' : '停用'"></span>
+                                    </td>
+                                    <td th:text="${row.createdAt != null ? row.createdAt : '-'}"></td>
+                                    <td class="text-center">
+                                        <a th:href="'/uav/edit/' + ${row.id}" class="btn btn-sm btn-primary mr-1">编辑</a>
+                                        <a th:href="'/uav/delete/' + ${row.id}" class="btn btn-sm btn-danger"
+                                           onclick="return confirm('确认删除该无人机记录？')">删除</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div th:if="${pageData.pages > 1}" class="mt-3">
+                        <nav>
+                            <span>共 <strong th:text="${pageData.total}"></strong> 条，第
+                                <strong th:text="${pageData.pageNum}"></strong> / <strong th:text="${pageData.pages}"></strong> 页</span>
+                            <span class="ml-3">
+                                <a th:if="${pageData.pageNum > 1}"
+                                   th:href="@{/uav/list(pageNum=${pageData.pageNum - 1}, model=${query.model}, uavCode=${query.uavCode}, status=${query.status})}"
+                                   class="btn btn-sm btn-outline-primary">上一页</a>
+                                <a th:if="${pageData.pageNum < pageData.pages}"
+                                   th:href="@{/uav/list(pageNum=${pageData.pageNum + 1}, model=${query.model}, uavCode=${query.uavCode}, status=${query.status})}"
+                                   class="btn btn-sm btn-outline-primary ml-1">下一页</a>
+                            </span>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

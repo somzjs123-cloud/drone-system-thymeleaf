@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:./data/uav.db
+    username:
+    password:
+    initialization-mode: always
+    schema: classpath:schema-sqlite.sql
+    druid:
+      initial-size: 1
+      min-idle: 1
+      max-active: 5
+      validation-query: SELECT 1
+      test-while-idle: true
+
+pagehelper:
+  helper-dialect: sqlite

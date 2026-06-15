@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    initialization-mode: never
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.example.uav.domain.entity
+  configuration:
+    map-underscore-to-camel-case: true

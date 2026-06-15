@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>无权限 - 无人机信息管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="login-page" style="background: linear-gradient(135deg, #6c757d, #343a40);">
+        <div class="card shadow text-center" style="width:420px;">
+            <div class="card-body py-5">
+                <h1 class="display-1 text-danger mb-3">403</h1>
+                <p class="text-muted">抱歉，您没有权限访问此页面</p>
+                <a href="/uav/list" class="btn btn-primary">返回首页</a>
+                <a href="/login" class="btn btn-outline-secondary ml-2">重新登录</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

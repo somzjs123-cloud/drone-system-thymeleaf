@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新增无人机 - 无人机信息管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <nav class="navbar app-header">
+            <span class="navbar-brand text-white">无人机信息管理系统</span>
+            <a href="/uav/list" class="btn btn-outline-light btn-sm">返回列表</a>
+        </nav>
+
+        <main class="page-main">
+            <div class="card shadow-sm" style="max-width:820px;margin:0 auto;">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">新增无人机</h5>
+
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">AI 智能生成</h6>
+                            <div class="form-row">
+                                <div class="col-md-6 form-group mb-0">
+                                    <input type="text" id="aiModel" class="form-control form-control-sm" placeholder="输入型号，如：Phantom 4 Pro">
+                                </div>
+                                <div class="col-md-4 form-group mb-0">
+                                    <select id="aiGrade" class="form-control form-control-sm">
+                                        <option value="">自动推断等级</option>
+                                        <option value="CONSUMER">消费级</option>
+                                        <option value="INDUSTRIAL">工业级</option>
+                                        <option value="MILITARY">军用级</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" id="aiGenBtn" class="btn btn-info btn-sm btn-block">生成</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post" action="/uav/add" id="addForm">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>注册编号 <span class="text-danger">*</span></label>
+                                <input type="text" name="uavCode" id="uavCode" class="form-control" required maxlength="64"
+                                       th:value="${request.uavCode}" placeholder="请输入注册编号">
+                                <small class="text-danger" id="codeError" style="display:none;">该注册编号已被使用</small>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>型号 <span class="text-danger">*</span></label>
+                                <input type="text" name="model" id="model" class="form-control" required maxlength="100"
+                                       th:value="${request.model}" placeholder="请输入型号">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>制造商</label>
+                            <input type="text" name="manufacturer" id="manufacturer" class="form-control" maxlength="100"
+                                   th:value="${request.manufacturer}" placeholder="请输入制造商">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label>最大载重 (kg)</label>
+                                <input type="number" step="0.1" name="maxPayload" id="maxPayload" class="form-control"
+                                       th:value="${request.maxPayload}" placeholder="kg">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>最大高度 (m)</label>
+                                <input type="number" name="maxAltitude" id="maxAltitude" class="form-control"
+                                       th:value="${request.maxAltitude}" placeholder="m">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>续航 (min)</label>
+                                <input type="number" name="maxFlightTime" id="maxFlightTime" class="form-control"
+                                       th:value="${request.maxFlightTime}" placeholder="min">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label>最大速度 (m/s)</label>
+                                <input type="number" step="0.1" name="maxSpeed" id="maxSpeed" class="form-control"
+                                       th:value="${request.maxSpeed}" placeholder="m/s">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>翼展 (cm)</label>
+                                <input type="number" step="0.1" name="wingspan" id="wingspan" class="form-control"
+                                       th:value="${request.wingspan}" placeholder="cm">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>自重 (kg)</label>
+                                <input type="number" step="0.1" name="weight" id="weight" class="form-control"
+                                       th:value="${request.weight}" placeholder="kg">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>备注 <small class="text-muted" id="remarkCount">0/500</small></label>
+                            <textarea name="remark" id="remark" class="form-control" rows="3" maxlength="500"
+                                      th:text="${request.remark}" placeholder="请输入备注"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">保存</button>
+                            <a href="/uav/list" class="btn btn-secondary ml-2">取消</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    document.getElementById('remark').addEventListener('input', function() {
+        document.getElementById('remarkCount').textContent = this.value.length + '/500';
+    });
+
+    document.getElementById('uavCode').addEventListener('blur', function() {
+        var code = this.value.trim();
+        if (!code) { document.getElementById('codeError').style.display = 'none'; return; }
+        fetch('/api/uav/check-code?uavCode=' + encodeURIComponent(code))
+            .then(function(r) { return r.json(); })
+            .then(function(res) {
+                var el = document.getElementById('codeError');
+                if (res.data === true) {
+                    el.style.display = 'block';
+                    el.textContent = '该注册编号已被使用';
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+    });
+
+    document.getElementById('aiGenBtn').addEventListener('click', function() {
+        var model = document.getElementById('aiModel').value.trim();
+        if (!model) { alert('请输入型号'); return; }
+        var grade = document.getElementById('aiGrade').value;
+        var btn = this;
+        btn.disabled = true;
+        btn.textContent = '生成中...';
+        var url = '/api/uav/ai-generate?model=' + encodeURIComponent(model);
+        if (grade) url += '&grade=' + encodeURIComponent(grade);
+        fetch(url).then(function(r) { return r.json(); })
+        .then(function(res) {
+            if (res.code !== 200) { alert(res.msg); return; }
+            var d = res.data;
+            if (d.manufacturer) document.getElementById('manufacturer').value = d.manufacturer;
+            if (d.maxPayload != null) document.getElementById('maxPayload').value = d.maxPayload;
+            if (d.maxAltitude != null) document.getElementById('maxAltitude').value = d.maxAltitude;
+            if (d.maxFlightTime != null) document.getElementById('maxFlightTime').value = d.maxFlightTime;
+            if (d.maxSpeed != null) document.getElementById('maxSpeed').value = d.maxSpeed;
+            if (d.wingspan != null) document.getElementById('wingspan').value = d.wingspan;
+            if (d.weight != null) document.getElementById('weight').value = d.weight;
+            if (d.remark) document.getElementById('remark').value = d.remark;
+            document.getElementById('remarkCount').textContent = (d.remark ? d.remark.length : 0) + '/500';
+        }).catch(function() { alert('AI 生成失败，请重试'); })
+        .finally(function() { btn.disabled = false; btn.textContent = '生成'; });
+    });
+    </script>
+</body>
+</html>

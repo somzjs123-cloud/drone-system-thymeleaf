@@ -1,0 +1,74 @@
+body, #app {
+    background: #f4f6f9;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+}
+
+.app-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-header {
+    background: #2f6f9f;
+    padding: 0.5rem 1.5rem;
+}
+
+.app-header .navbar-brand {
+    color: #fff;
+    font-weight: 600;
+}
+
+.page-main {
+    flex: 1;
+    padding: 24px;
+}
+
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: linear-gradient(135deg, #2f6f9f, #1f3f5b);
+}
+
+.login-card {
+    width: min(420px, 100%);
+    border: 0;
+    border-radius: 8px;
+}
+
+.login-card .card-body {
+    padding: 36px;
+}
+
+.brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 14px;
+    border-radius: 8px;
+    background: #2f6f9f;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.login-page h1 {
+    color: #343a40;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}
+
+@media (max-width: 767.98px) {
+    .page-main { padding: 12px; }
+    .app-header { padding: 0.5rem 0.75rem; }
+}
